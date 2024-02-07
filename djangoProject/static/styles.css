@@ -1,0 +1,144 @@
+
+/*кнопка как бумага*/
+.book-btn {
+  position: relative;
+  /*font-size: 1.2em;*/
+  width: fit-content;
+  height: 40px;
+  /*padding-left: 40px;*/
+  /*padding-right: 40px;*/
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7em 1.4em;
+  background-color: #489205;
+  text-decoration: none;
+  border: none;
+  border-radius: 0.5em;
+  color: #ffffff;
+  box-shadow: 0.5em 0.5em 0.5em rgba(0, 0, 0, 0);
+}
+
+.book-btn::before {
+  position: absolute;
+  content: '';
+  height: 0;
+  width: 0;
+  top: 0;
+  left: 0;
+  background: linear-gradient(135deg, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 50%, rgb(46, 93, 4) 50%, rgba(72,146,5,1) 60%);
+  border-radius: 0 0 0.5em 0;
+  box-shadow: 0.2em 0.2em 0.2em rgba(0, 0, 0, 0.3);
+  transition: 0.3s;
+}
+
+.book-btn:hover::before {
+  width: 1.6em;
+  height: 1.6em;
+}
+
+.book-btn:active {
+  box-shadow: 0.2em 0.2em 0.3em rgb(255, 255, 255);
+  transform: translate(0.1em, 0.1em);
+}
+
+
+/*кнопка оплаты*/
+.pay-btn {
+  width: 130px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(72,146,5,1);
+  border: none;
+  border-radius: 0.5em;
+  color: white;
+  font-weight: 600;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.103);
+  position: relative;
+  overflow: hidden;
+  transition-duration: .3s;
+}
+
+.svgIcon {
+  width: 16px;
+}
+
+.svgIcon path {
+  fill: white;
+}
+
+.pay-btn::before {
+  width: 130px;
+  height: 130px;
+  position: absolute;
+  content: "";
+  background-color: white;
+  border-radius: 50%;
+  left: -100%;
+  top: 0;
+  transition-duration: .3s;
+  mix-blend-mode: hue;
+}
+
+.pay-btn:hover::before {
+  transition-duration: .3s;
+  transform: translate(100%,-50%);
+  border-radius: 0.5em;
+}
+
+.pay-btn:active {
+  transform: translate(5px,5px);
+  transition-duration: .3s;
+  border-radius: 0.5em;
+}
+
+
+/*кастомный футер*/
+.custom-footer .nav-item .nav-link {
+  background-color: #ffffff; /* Цвет фона */
+  color: #376e04; /* Цвет текста */
+  font-weight: bold;
+}
+
+
+/*кастомная навигационная панель*/
+.custom-navbar .navbar-nav .nav-link {
+  background-color: #ffffff; /* Цвет фона */
+  color: #000000; /* Цвет текста */
+  margin-left: 30px;
+  margin-right: 30px;
+}
+
+.navbar-brand {
+  color: #376e04; /* Цвет текста */
+}
+
+.font-title {
+  font-family: "Times New Roman";
+  font-size: 60px;
+  text-decoration-color: #376e04;
+}
+
+.bigger-font {
+    font-size: 20px;
+}
+
+.bigger-font-brand {
+    font-family: "Times New Roman";
+    font-weight: bold;
+    font-size: 50px;
+    text-decoration-color: #376e04;
+}
+
+/*кастомное выпадающее меню*/
+.custom-dropdown {
+  background-color: #376e04;
+  color: white;
+  border-radius: 10px;
+  padding: 5px;
+}

@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% load static %}
+
+    <h1 class="font-title">Наши книги</h1>
+    <!-- Добавьте фильтры и элементы управления сортировкой здесь -->
+    <form>
+        <div class="row align-items-center" style="border-radius: 20px; padding: 10px;">
+            <div class="col">
+                <h5>Сортировка: </h5>
+            </div>
+
+            <div class="col">
+                <select class="custom-dropdown" id="alphabetSort">
+                    <option value="0">По алфавиту</option>
+                    <option value="1">А-Я</option>
+                    <option value="2">Я-А</option>
+                </select>
+            </div>
+
+            <div class="col">
+                <select class="custom-dropdown" id="costSort">
+                    <option value="0">По цене</option>
+                    <option value="1">сначала дешёвые</option>
+                    <option value="2">сначала дорогие</option>
+                </select>
+            </div>
+
+{#            <div class="col"></div>#}
+
+            <div class="col">
+                <h5>Фильтр: </h5>
+            </div>
+
+            <div class="col">
+                <select class="custom-dropdown" id="categoryFilter">
+                    <option selected>Категория</option>
+                    <option value="1">Художественная</option>
+                    <option value="2">Детская</option>
+                </select>
+            </div>
+
+            <div class="col">
+                <select class="custom-dropdown" id="authorFilter">
+                    <option selected>Автор</option>
+                    <option value="1">Л.Н.Толстой</option>
+                    <option value="2">Дж. Оруэлл</option>
+                </select>
+            </div>
+
+            <div class="col"></div>
+
+            <div class="col">
+                <button type="submit" class="btn" style="background-color: #489205; color: white; border-radius: 10px">Применить</button>
+            </div>
+        </div>
+    </form>
+
+    <br/>
+    <br/>
+    <div class="card flex-md-row mb-4 box-shadow h-md-250" href="#" style="background: #f5fce5; border-radius: 20px; border-color: #000000">
+        <div class="card-body d-flex flex-column align-items-start">
+            <h3 class="card-title"><button href="#" style="background-color: beige; border-color: beige; border-radius: 10px">Название Книги</button></h3>
+            <p class="card-text bigger-font">Автор: Имя Автора</p>
+            <p class="card-text bigger-font">Цена: $19.99</p>
+            <div class="mt-auto">
+                <button href="#" class="book-btn">В корзину</button>
+            </div>
+        </div>
+        <img class="card-img-right flex-auto d-none d-md-block" src="{% static 'book.jpg' %}" alt="Название Книги" data-holder-rendered="true" style="width: 200px; height: 250px; border-bottom-right-radius: 20px; border-top-right-radius: 20px;">
+    </div>
+    <div class="card flex-md-row mb-4 box-shadow h-md-250" href="#" style="background: #f5fce5; border-radius: 20px; border-color: #000000">
+        <div class="card-body d-flex flex-column align-items-start">
+            <h3 class="card-title"><button href="#" style="background-color: beige; border-color: beige; border-radius: 10px">Название Книги</button></h3>
+            <p class="card-text bigger-font">Автор: Имя Автора</p>
+            <p class="card-text bigger-font">Цена: $19.99</p>
+            <div class="mt-auto">
+                <button href="#" class="book-btn">В корзину</button>
+            </div>
+        </div>
+        <img class="card-img-right flex-auto d-none d-md-block" src="{% static 'book.jpg' %}" alt="Название Книги" data-holder-rendered="true" style="width: 200px; height: 250px; border-bottom-right-radius: 20px; border-top-right-radius: 20px;">
+    </div>
+
+
+{% endblock %}
