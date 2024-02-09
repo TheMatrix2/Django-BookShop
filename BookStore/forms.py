@@ -1,7 +1,19 @@
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django import forms
 from .models import Book, Category
+
+
+class EmailAuthenticationForm(AuthenticationForm):
+    email = forms.EmailField()
+
+    def clean_username(self):
+        return self.cleaned_data['email']
+
+    class Meta:
+        model = get_user_model()
+        fields = ['email', 'password']
 
 
 class SignUpForm(UserCreationForm):
