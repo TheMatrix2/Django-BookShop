@@ -1,0 +1,45 @@
+{% extends 'staff/base.html' %}
+{% block content %}
+    <h1 class="font-title">Все книги</h1>
+    <br/>
+    {% if not books %}
+        <h1 style="font-style: italic">На складе нет книг</h1>
+    {% else %}
+        <table class="table table-hover" style="cursor: pointer">
+            <thead>
+            <tr>
+                <th scope="col">Название</th>
+                <th scope="col">Автор</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for book in books %}
+                <tr data-id="{{ book.id }}">
+                    <td>{{ book.title }}</td>
+                    <td>{{ book.author.name }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    <br/>
+    <div style="text-align: center">
+        <a class="btn btn-success" href="{% url 'add_book' %}">Добавить книгу</a>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var tableRows = document.querySelectorAll('.table tbody tr');
+    
+            tableRows.forEach(function (row) {
+                row.addEventListener('click', function () {
+                    var clientId = this.getAttribute('data-id');
+                    if (clientId) {
+                        window.location.href = '/staff/edit-book/' + clientId;
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

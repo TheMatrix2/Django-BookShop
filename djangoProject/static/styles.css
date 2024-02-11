@@ -33,6 +33,11 @@
   transition: 0.3s;
 }
 
+.book-btn:hover {
+  color: white;
+}
+
+
 .book-btn:hover::before {
   width: 1.6em;
   height: 1.6em;
@@ -46,14 +51,15 @@
 
 /*кнопка оплаты*/
 .pay-btn {
-  width: 130px;
-  height: 40px;
+  /*width: 130px;*/
+  /*height: 40px;*/
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: rgb(72,146,5,1);
   border: none;
   border-radius: 0.5em;
+  padding: 10px;
   color: white;
   font-weight: 600;
   gap: 8px;
@@ -73,8 +79,8 @@
 }
 
 .pay-btn::before {
-  width: 130px;
-  height: 130px;
+  /*width: 130px;*/
+  /*height: 130px;*/
   position: absolute;
   content: "";
   background-color: white;
@@ -118,6 +124,10 @@
   color: #376e04; /* Цвет текста */
 }
 
+.navbar-brand:hover {
+  color: #376e04;
+}
+
 .font-title {
   font-family: "Times New Roman";
   font-size: 60px;
@@ -141,4 +151,8 @@
   color: white;
   border-radius: 10px;
   padding: 5px;
+}
+
+.dropdown-item:active {
+  background-color: #adacac;
 }

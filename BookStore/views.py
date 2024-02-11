@@ -1,16 +1,23 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import LoginView
 from django.contrib import messages
 from rest_framework.decorators import api_view
 
-from BookStore.forms import SignUpForm, EmailAuthenticationForm
-from BookStore.models import Book, Category
+from BookStore.forms import SignUpForm, AddBookForm, EditBookForm
+from BookStore.models import Book, Category, Author, Cart, CartItem, Order, OrderItem
+from .books import books_sorted_by_alphabet, books_sorted_by_cost
 
 
-class EmailLoginView(LoginView):
-    form_class = EmailAuthenticationForm
+# декоратор для ограничения доступа к разделам staff
+def staff_required(func):
+    def wrapper(request, *args, **kwargs):
+        if request.user.is_staff:
+            return func(request, *args, **kwargs)
+        else:
+            messages.error(request, 'У вас недостаточно прав, чтобы перейти в этот раздел')
+            return redirect('home')
+    return wrapper
 
 
 @api_view(['GET'])
@@ -22,9 +29,9 @@ def homepage(request):
 @api_view(['POST', 'GET'])
 def login_user(request):
     if request.method == 'POST':
-        email = request.POST['email']
+        username = request.POST['email']
         password = request.POST['password']
-        user = authenticate(request, email=email, password=password)
+        user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
             messages.success(request, "Успешная авторизация")
@@ -37,90 +44,177 @@ def login_user(request):
 
 
 @login_required(login_url='/login')
-@api_view(['POST'])
+@api_view(['POST', 'GET'])
 def logout_user(request):
     logout(request)
     return redirect('home')
 
 
-@api_view(['POST'])
+@api_view(['POST', 'GET'])
 def signup(request):
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
-            form.save()
-            email = form.cleaned_data.get('email')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=email, password=password)
+            user = form.save()
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            Cart.objects.create(user_id=request.user.id, total_price=0)
+            messages.success(request, "Успешная регистрация")
+            return redirect('home')
+    form = SignUpForm()
+    return render(request, 'register.html', {'form': form})
 
 
 @api_view(['GET'])
-def all_books(request):
-    # books = Book.objects.all()
-    return render(request, 'user/catalog.html')
-
-
-@api_view(['GET'])
-def books_by_author(request, author_id):
-    pass
-
-
-@api_view(['GET'])
-def books_by_category(request, category_id):
-    pass
+def catalog(request):
+    categories = Category.objects.all()
+    authors = Author.objects.all()
+    books = Book.objects.all()
+    cart_items = CartItem.objects.all()
+    if request.method == 'GET':
+        alphabet_sort = request.GET.get('alphabetSort')
+        cost_sort = request.GET.get('costSort')
+        category_filter = request.GET.get('categoryFilter')
+        author_filter = request.GET.get('authorFilter')
+        if alphabet_sort and alphabet_sort != "0":
+            books = books_sorted_by_alphabet(alphabet_sort)
+        elif cost_sort and cost_sort != "0":
+            books = books_sorted_by_cost(cost_sort)
+        elif category_filter and category_filter != "0":
+            books = Book.objects.filter(category_id=category_filter)
+        elif author_filter and author_filter != "0":
+            books = Book.objects.filter(author_id=author_filter)
+    return render(request, 'user/catalog.html', {
+        'books': books,
+        'authors': authors,
+        'categories': categories,
+        'cart': cart_items})
 
 
 @api_view(['GET'])
 def book_info(request, book_id):
-    pass
+    book = Book.objects.get(id=book_id)
+    if book:
+        return render(request, 'user/book_info.html', {'book': book})
 
 
 @api_view(['GET'])
 @login_required(login_url='/login')
 def profile(request):
-    return render(request, 'user/../templates/profile.html')
+    return render(request, 'user/profile.html')
 
 
-@api_view(['POST'])
+@api_view(['GET'])
 @login_required(login_url='/login')
-def add_book(request):
-    pass
+def view_cart(request):
+    cart = Cart.objects.get(user=request.user)
+    items = CartItem.objects.filter(cart=cart)
+    books_in_cart = [Book.objects.get(id=item.book_id) for item in items]
+    return render(request, 'user/cart.html', {'books': books_in_cart, 'cart': cart})
 
 
-@api_view(['PUT'])
+@api_view(['POST', 'GET'])
 @login_required(login_url='/login')
-def edit_book(request, book_id):
-    pass
+def add_to_cart(request, book_id):
+    previous_url = request.META.get('HTTP_REFERER', '/')
+    if request.method == 'POST':
+        cart = Cart.objects.get(user_id=request.user.id)
+        book = Book.objects.get(id=book_id)
+        if CartItem.objects.filter(book_id=book.id, cart_id=cart.id):
+            messages.error(request, 'Книга уже в корзине')
+        else:
+            CartItem.objects.create(cart=cart, book=book, quantity=1)
+            cart.total_price += book.price
+            cart.save()
+            messages.success(request, 'Книга добавлена в корзину')
+    return redirect(previous_url)
 
 
-@api_view(['DELETE'])
+@api_view(['GET', 'POST', 'DELETE'])
 @login_required(login_url='/login')
-def delete_book(request, book_id):
-    pass
+def delete_from_cart(request, book_id):
+    previous_url = request.META.get('HTTP_REFERER', '/')
+    if request.method == 'POST':
+        book = Book.objects.get(id=book_id)
+        cart = Cart.objects.get(user_id=request.user.id)
+        to_delete = CartItem.objects.get(book_id=book.id, cart_id=cart.id)
+        if to_delete:
+            cart.total_price -= to_delete.book.price
+            cart.save()
+            to_delete.delete()
+            messages.success(request, 'Книга удалена из корзины')
+    return redirect(previous_url)
 
 
 @api_view(['GET', 'POST'])
 @login_required(login_url='/login')
-def view_cart(request):
-    pass
-
-
-@api_view(['POST'])
-@login_required(login_url='/login')
-def add_to_cart(request, book_id):
-    pass
-
-
-@api_view(['DELETE'])
-@login_required(login_url='/login')
-def delete_from_cart(request, book_id):
-    pass
-
-
-@api_view(['POST'])
-@login_required(login_url='/login')
 def make_order(request, cart_id):
-    pass
+    cart = Cart.objects.get(id=cart_id)
+    if request.method == 'POST':
+        items = CartItem.objects.filter(cart=cart, cart__user_id=request.user.id)
+        order = Order.objects.create(user=request.user, total_price=cart.total_price)
+        for item in items:
+            OrderItem.objects.create(order_id=order.id, book=item.book, quantity=item.quantity, price=item.book.price)
+            item.delete()
+        messages.success(request, 'Заказ создан')
+    return render(request, 'user/home.html')
 
 
+@api_view(['GET'])
+@login_required(login_url='/login')
+@staff_required
+def staff_profile(request):
+    books = Book.objects.all()
+    return render(request, 'staff/profile.html', {'books': books})
 
+
+@api_view(['GET', 'POST'])
+@login_required(login_url='/login')
+@staff_required
+def add_book(request):
+    form = AddBookForm(request.POST or None)
+    previous_url = request.META.get('HTTP_REFERER', '/')
+    if request.method == 'POST':
+        author = Author.objects.get_or_create(name=request.POST['author'])
+        Book.objects.create(
+            title=request.POST['title'],
+            author=author[0],
+            category=Category.objects.get(pk=request.POST['category']),
+            description=request.POST['description'],
+            price=request.POST['price'],
+            number_of_pages=request.POST['number_of_pages'],
+            quantity_in_stock=request.POST['quantity_in_stock'])
+        messages.success(request, 'Книга добавлена')
+        return redirect('staff_profile')
+    else:
+        return render(request, 'staff/add_book.html', {'form': form,
+                                                       'previous_url': previous_url})
+
+
+@api_view(['GET', 'POST'])
+@login_required(login_url='/login')
+@staff_required
+def edit_book(request, book_id):
+    previous_url = request.META.get('HTTP_REFERER', '/')
+    to_edit = Book.objects.get(id=book_id)
+    form = EditBookForm(request.POST or None, instance=to_edit)
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Информация о книге обновлена')
+    return render(request, 'staff/edit_book.html', {
+        'form': form,
+        'book': to_edit,
+        'previous_url': previous_url})
+
+
+@api_view(['GET', 'DELETE', 'POST'])
+@login_required(login_url='/login')
+@staff_required
+def delete_book(request, book_id):
+    to_delete = Book.objects.get(id=book_id)
+    if request.method == 'POST':
+        to_delete.delete()
+        messages.success(request, 'Информация о книге удалена')
+        return redirect('staff_profile')
+    else:
+        return render(request, 'staff/edit_book.html', {'book': to_delete})

@@ -1,4 +1,4 @@
-<link href="../djangoProject/static/styles.css" rel="stylesheet">
+<link href="../../djangoProject/static/styles.css" rel="stylesheet">
 
 <nav class="navbar navbar-expand-lg custom-navbar p-4">
     <div class="container-fluid">
@@ -12,7 +12,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-0 mb-lg-0">
                 {% if user.is_authenticated %}
-                <li class="ml-auto"><a class="nav-link bigger-font" href="#">Личный кабинет</a></li>
+{#                <li class="ml-auto"><a class="nav-link bigger-font" href="#">Личный кабинет</a></li>#}
                 <li class="ml-auto"><a class="nav-link bigger-font" href="{% url 'logout' %}">Выйти</a></li>
                 {% else %}
                 <li class="ml-auto"><a class="nav-link bigger-font" href="{% url 'login' %}">Войти</a></li>
@@ -21,7 +21,9 @@
             <ul class="navbar-nav ml-auto mb-0 mb-lg-0">
                 <li class="ml-auto"><a class="nav-link bigger-font" href="#">О нас</a></li>
                 <li class="ml-auto"><a class="nav-link bigger-font" href="{% url 'catalog' %}">Каталог</a></li>
-                <li class="ml-auto"><button class="book-btn bigger-font" href="#">Корзина</button></li>
+                {% if user.is_authenticated %}
+                <li class="ml-auto"><a class="book-btn bigger-font" style="margin-left: 30px; " href="{% url 'cart' %}">Корзина</a></li>
+                {% endif %}
             </ul>
         </div>
     </div>

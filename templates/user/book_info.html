@@ -1,10 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'user/base.html' %}
+{% block content %}
+    {% load static %}
+<div class="card flex-md-row mb-4 box-shadow h-md-250" style="background: #f5fce5; border-radius: 20px; border-color: #000000">
+    <div class="card-header">
+        <img class="card-img-right flex-auto d-none d-md-block" src="{% static 'book.jpg' %}" alt="Название Книги" data-holder-rendered="true" style="width: 200px; height: 250px; border-radius: 20px">
+    </div>
+    <div class="card-body">
+        <p class="card-text bigger-font">
+            <strong>{{book.title}}</strong>
+        </p>
+        <p class="card-text bigger-font">
+            <strong>Автор: </strong>{{book.author.name}}
+        </p>
+        <p class="card-text bigger-font">
+            <strong>Категория: </strong>{{book.category.name}}
+        </p>
+        <p class="card-text bigger-font">
+            <strong>Страниц: </strong>{{book.number_of_pages}}
+        </p>
+        <p class="card-text bigger-font">
+            {{book.description}}
+        </p>
+        <p class="card-text bigger-font">
+            <strong>₽{{book.price}}</strong>
+        </p>
+            <form method="post" action="{% url 'add_to_cart' book.id %}">
+                {% csrf_token %}
+                <button type="submit" class="book-btn bigger-font">В корзину</button>
+            </form>
+    </div>
+</div>
 
-</body>
-</html>
+<a href="{% url 'catalog' %}" class="book-btn bigger-font">Назад</a>
+{% endblock %}

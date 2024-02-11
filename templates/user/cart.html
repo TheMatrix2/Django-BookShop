@@ -1,10 +1,77 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'user/base.html' %}
+{% block content %}
+    {% load static %}
+    <h1 class="font-title">Корзина</h1>
+    <br/>
+{% if not books %}
+        <h1 style="font-style: italic">Корзина пуста</h1>
+    {% else %}
+<div class="row">
+        <table class="table" style="background-color: #f2faeb; border-radius: 20px">
+            <thead>
+            <tr>
+            </tr>
+            </thead>
+            <tbody>
 
-</body>
-</html>
+            {% for book in books %}
+                <tr style="border-radius: 20px">
+                    <td>
+                        <img class="card-img-right flex-auto d-none d-md-block" src="{% static 'book.jpg' %}" alt="Название Книги" data-holder-rendered="true" style="width: 100px; height: 125px; border-radius: 20px">
+                    </td>
+                    <td class="bigger-font">{{ book.title }}</td>
+                    <td class="bigger-font">{{ book.author.name }}</td>
+                    <td class="bigger-font">₽{{ book.price }}</td>
+                    <td>
+                        <form method="post" action="{% url 'delete_from_cart' book.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Удалить</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr style="border-radius: 20px">
+                <td class="bigger-font"></td>
+                <td class="bigger-font"></td>
+                <td class="bigger-font"></td>
+                <td class="bigger-font" style="font-weight: bold">₽{{ cart.total_price }}</td>
+            </tr>
+            </tbody>
+        </table>
+    <div class="dropdown-divider" style="border-color: black"></div>
+    <br/>
+    <br/>
+    <h1 class="font-title">Оформить заказ</h1>
+    <br/>
+    <form method="post" action="{% url 'order' cart.id %}">
+    {% csrf_token %}
+    <div class="col-md-6 col-md-offset-6">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="card_number" required>
+            <label for="card_number">Номер карты</label>
+        </div>
+
+        <div class="row">
+            <div class="form-group form-floating mb-3 col-md-6">
+                <input type="text" class="form-control" id="expirationDate" name="expiration_date" required>
+                <label for="expirationDate">Срок действия</label>
+                <div class="invalid-feedback">
+                    Пожалуйста, укажите срок действия карты.
+                </div>
+            </div>
+            <div class="form-group form-floating mb-3 col-md-6">
+                <input type="text" class="form-control" id="cvv" name="cvv" required>
+                <label for="cvv">CVV</label>
+                <div class="invalid-feedback">
+                    Пожалуйста, укажите CVV код.
+                </div>
+            </div>
+        </div>
+    </div>
+        
+
+        <button type="submit" class="pay-btn">Оформить заказ</button>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}
