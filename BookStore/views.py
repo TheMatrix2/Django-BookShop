@@ -20,6 +20,19 @@ def staff_required(func):
     return wrapper
 
 
+def superuser_error(func):
+    def wrapper(request, *args, **kwargs):
+        previous_url = request.META.get('HTTP_REFERER', '/')
+        if not request.user.is_superuser:
+            return func(request, *args, **kwargs)
+        else:
+            messages.error(request, 'С правами суперпользователя нельзя взаимодействовать с корзиной и заказом.'
+                                    ' Авторизируйтесь как обычный пользователь или зарегистрируйте нового.')
+            return redirect(previous_url)
+    return wrapper
+
+
+
 @api_view(['GET'])
 def homepage(request):
     categories = Category.objects.all()
@@ -99,13 +112,9 @@ def book_info(request, book_id):
 
 @api_view(['GET'])
 @login_required(login_url='/login')
-def profile(request):
-    return render(request, 'user/profile.html')
-
-
-@api_view(['GET'])
-@login_required(login_url='/login')
+@superuser_error
 def view_cart(request):
+    previous_url = request.META.get('HTTP_REFERER', '/')
     cart = Cart.objects.get(user=request.user)
     items = CartItem.objects.filter(cart=cart)
     books_in_cart = [Book.objects.get(id=item.book_id) for item in items]
@@ -114,9 +123,12 @@ def view_cart(request):
 
 @api_view(['POST', 'GET'])
 @login_required(login_url='/login')
+@superuser_error
 def add_to_cart(request, book_id):
     previous_url = request.META.get('HTTP_REFERER', '/')
     if request.method == 'POST':
+        if request.user.is_superuser:
+            messages.error(request, '')
         cart = Cart.objects.get(user_id=request.user.id)
         book = Book.objects.get(id=book_id)
         if CartItem.objects.filter(book_id=book.id, cart_id=cart.id):
@@ -131,6 +143,7 @@ def add_to_cart(request, book_id):
 
 @api_view(['GET', 'POST', 'DELETE'])
 @login_required(login_url='/login')
+@superuser_error
 def delete_from_cart(request, book_id):
     previous_url = request.META.get('HTTP_REFERER', '/')
     if request.method == 'POST':
@@ -147,6 +160,7 @@ def delete_from_cart(request, book_id):
 
 @api_view(['GET', 'POST'])
 @login_required(login_url='/login')
+@superuser_error
 def make_order(request, cart_id):
     cart = Cart.objects.get(id=cart_id)
     if request.method == 'POST':
