@@ -4,12 +4,6 @@
 sudo apt-get update
 sudo apt-get install -y python3.10
 
-# Клонирование репозитория Django-приложения
-git clone https://github.com/TheMatrix2/Django-BookShop.git djangoProject
-
-# Переход в каталог приложения
-cd djangoProject
-
 # Создание виртуального окружения
 python3.10 -m venv .venv
 

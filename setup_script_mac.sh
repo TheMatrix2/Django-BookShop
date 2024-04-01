@@ -6,10 +6,6 @@ brew install python@3.10
 
 export PATH="/usr/local/opt/python@3.10/bin:$PATH"
 
-git clone https://github.com/TheMatrix2/Django-BookShop.git
-
-cd Django-BookShop
-
 python3.10 -m venv .venv
 
 source .venv/bin/activate
