@@ -32,7 +32,6 @@ def superuser_error(func):
     return wrapper
 
 
-
 @api_view(['GET'])
 def homepage(request):
     categories = Category.objects.all()
