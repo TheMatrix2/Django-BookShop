@@ -1,4 +1,4 @@
-from BookStore.models import Book, Category, Author
+from django_archive.BookStore.models import Book
 
 
 def books_sorted_by_cost(order):
