@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from rest_framework.decorators import api_view
 
-from django_archive.BookStore.forms import SignUpForm, AddBookForm, EditBookForm
-from django_archive.BookStore.models import Book, Category, Author, Cart, CartItem, Order, OrderItem
+from BookStore.forms import SignUpForm, AddBookForm, EditBookForm
+from BookStore.models import Book, Category, Author, Cart, CartItem, Order, OrderItem
 from .books import books_sorted_by_alphabet, books_sorted_by_cost
 
 

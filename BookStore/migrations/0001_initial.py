@@ -3,7 +3,7 @@
 import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
-from django_archive.BookStore.models import Category
+from BookStore.models import Category
 
 
 def create_categories(apps, schema_editor):
